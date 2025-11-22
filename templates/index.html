@@ -18,9 +18,14 @@
             <nav class="nav-menu">
                 <a href="/" class="nav-item active">Startseite</a>
                 <a href="/mylist" class="nav-item">Meine Liste</a>
-                <a href="/" class="nav-item">Neu hinzugefügt</a>
+                {{if .IsAdmin}}
+                <a href="/admin" class="nav-item">Admin</a>
+                {{end}}
             </nav>
             <div class="header-actions">
+                <div class="user-info">
+                    Angemeldet als: <strong>{{index .Users .CurrentUser | .DisplayName}}</strong>
+                </div>
                 <div class="search-box">
                     <form action="/search" method="get" class="search-form">
                         <input type="text" name="q" placeholder="Serien suchen..." value="{{.SearchQuery}}">
@@ -43,15 +48,12 @@
                 </div>
                 <div class="stat">
                     <span class="stat-number">{{.TotalWatched}}</span>
-                    <span class="stat-label">Serien Abgeschlossen</span>
+                    <span class="stat-label">Episoden gesehen</span>
                 </div>
             </div>
         </div>
         <div class="hero-gradient"></div>
     </section>
-
-    <!-- API Status -->
-
 
     <!-- Messages -->
     {{if .ErrorMessage}}
@@ -143,10 +145,10 @@
             {{range .SeriesList}}
             <div class="series-card" data-progress="{{.Progress}}">
               {{if .CoverURL}}
-    <img class="series-cover" src="{{.CoverURL}}" alt="{{.Title}}" onerror="this.style.display='none'">
-{{else}}
-    <div class="poster-placeholder">📺</div>
-{{end}}
+                <img class="series-cover" src="{{.CoverURL}}" alt="{{.Title}}" onerror="this.style.display='none'">
+              {{else}}
+                <div class="poster-placeholder">📺</div>
+              {{end}}
 
                 <div class="card-header">
                     <div class="progress-ring">
@@ -228,7 +230,6 @@
             <div class="footer-section">
                 <h4>Serien Tracker</h4>
                 <p>Deine persönliche Netflix-ähnliche Serienbibliothek</p>
-                <p></p>
                 <a href="https://github.com/neodk2004/serien-tracker" target="_blank" class="section-count">GitHub</a>
             </div>
             <div class="footer-section">
@@ -243,12 +244,12 @@
                 <h4>Hilfe</h4>
                 <ul>
                     <li>Verwende IMDb IDs (tt0944947) oder Serientitel</li>
-                    <li>API Key von <a href="https://omdbapi.com" target="_blank" class="section-count">omdbapi.com</a> erforderlich</li>
+                    <li>API Key von <a href="https://omdbapi.com" target="_blank">omdbapi.com</a> erforderlich</li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 Serien Tracker. Inspired by Netflix.</p>
+            <p>&copy; 2025 Serien Tracker. Inspired by Netflix.</p>
             {{if not .APIAvailable}}
             <div class="netflix-alert error">
                 <div class="alert-content">
@@ -268,7 +269,6 @@
     </footer>
 
     <script>
-        // Hover-Effekte für Karten
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.series-card, .result-card');
             cards.forEach(card => {
@@ -276,15 +276,12 @@
                     this.style.transform = 'scale(1.05)';
                     this.style.zIndex = '10';
                 });
-
                 card.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                     this.style.zIndex = '1';
                 });
             });
 
-            // Fortschrittskreise animieren
-            // select only the SVG circle elements inside the progress svg to avoid affecting other .progress-fill elements (like divs)
             const progressCircles = document.querySelectorAll('.progress-circle .progress-fill');
             progressCircles.forEach(circle => {
                 const card = circle.closest('.series-card');
@@ -292,7 +289,6 @@
                     const progress = parseInt(card.getAttribute('data-progress')) || 0;
                     const circumference = 2 * Math.PI * 18;
                     const offset = circumference - (progress / 100) * circumference;
-                    // prefer setting SVG attributes when available
                     if (typeof circle.setAttribute === 'function') {
                         circle.setAttribute('stroke-dasharray', circumference);
                         circle.setAttribute('stroke-dashoffset', offset);

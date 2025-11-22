@@ -1,17 +1,36 @@
 # Dockerfile
 FROM golang:1.21-alpine AS builder
+
 WORKDIR /app
+
+# Abhängigkeiten kopieren und herunterladen
 COPY go.mod go.sum ./
 RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o series-tracker .
 
+# Quellcode kopieren
+COPY . .
+
+# Go-Binary bauen (CGO deaktiviert für kleinere Alpine-Binaries)
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o serien-tracker .
+
+# Endgültiges Image (sehr klein)
 FROM alpine:latest
+
+# CA-Zertifikate für HTTPS (z. B. OMDb-API) hinzufügen
 RUN apk --no-cache add ca-certificates
-WORKDIR /app
-COPY --from=builder /app/series-tracker .
+
+WORKDIR /root/
+
+# Binary und Assets aus Builder-Image kopieren
+COPY --from=builder /app/serien-tracker .
 COPY --from=builder /app/templates ./templates/
 COPY --from=builder /app/static ./static/
-RUN mkdir -p /app/data
+
+# Datenverzeichnis vorbereiten (für Nutzerdaten)
+RUN mkdir -p data
+
+# Port freigeben
 EXPOSE 8080
-CMD ["./series-tracker"]
+
+# Startbefehl
+CMD ["./serien-tracker"]
