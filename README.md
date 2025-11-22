@@ -1,3 +1,4 @@
+[![Test Docker Build and Run](https://github.com/neodk2004/serien-tracker-docker/actions/workflows/serien-tracker-docker.yml/badge.svg?branch=main)](https://github.com/neodk2004/serien-tracker-docker/actions/workflows/serien-tracker-docker.yml)
 # Serientracker (Go)
 Ein einfacher und effizienter Serientracker, geschrieben in Go, der die OMDb API nutzt, um Serieninformationen abzurufen und persönliche Serienlisten zu verwalten.
 <img width="1771" height="761" alt="Screenshot 2025-11-22 124254" src="https://github.com/user-attachments/assets/c1de464b-49ac-4e0f-abe4-801a56373de1" />
@@ -25,8 +26,8 @@ OMDb API-Schlüssel (kostenlos registrierbar unter https://www.omdbapi.com/apike
 
 Installation
 Repository klonen:
-`git clone https://github.com/dein-benutzername/serientracker.git`
-`cd serientracker`
+`git clone https://github.com/neodk2004/serien-tracker.git`
+`cd serien-tracker`
 
 Abhängigkeiten installieren:
 
