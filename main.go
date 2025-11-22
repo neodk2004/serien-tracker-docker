@@ -330,7 +330,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		CurrentUserName: users[user].DisplayName,
 		UserTheme:       theme,
 		IsAdmin:         true,
-		Users:           users,
+		//Users:           User,
 	}
 	templates.ExecuteTemplate(w, "admin.html", data)
 }
