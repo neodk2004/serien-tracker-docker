@@ -1,0 +1,33 @@
+name: Test Docker Build and Run
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t serien-tracker .
+
+      - name: Start container in background
+        run: |
+          docker run -d --name app -p 8080:8080 serien-tracker
+          # Warte kurz, damit der Server starten kann
+          sleep 5
+
+      - name: Test if app is responding
+        run: |
+          # Prüfe, ob der Root-Endpunkt erreichbar ist
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/)
+          if [ "$response" -ne 200 ]; then
+            echo "❌ Fehler: HTTP-Status $response – App antwortet nicht mit 200"
+            docker logs app
+            exit
