@@ -221,7 +221,7 @@ func requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 		if !users[user].IsAdmin {
 			// Stelle sicher, dass Theme gültig ist
 			theme := users[user].Theme
-			validThemes := map[string]bool{"netflix": true, "apple": true, "android": true, "windows": true}
+			validThemes := map[string]bool{"style": true, "netflix": true, "apple": true, "android": true, "windows": true}
 			if !validThemes[theme] {
 				theme = "netflix"
 			}
