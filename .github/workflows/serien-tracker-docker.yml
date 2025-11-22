@@ -1,33 +1,32 @@
-name: Test Docker Build and Run
+name: Test Serien Tracker
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 jobs:
-  test-docker:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t serien-tracker .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Start container in background
+      - name: Build and start app
         run: |
-          docker run -d --name app -p 8080:8080 serien-tracker -e 55570c3a
-          # Warte kurz, damit der Server starten kann
-          sleep 5
+          echo "OMDb_API_KEY=${{ secrets.OMDb_API_KEY }}" > .env
+          docker compose up --build -d
 
-      - name: Test if app is responding
+      - name: Wait for startup
+        run: sleep 20
+
+      - name: Test /login endpoint
         run: |
-          # Prüfe, ob der Root-Endpunkt erreichbar ist
-          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/)
-          if [ "$response" -ne 200 ]; then
-            echo "❌ Fehler: HTTP-Status $response – App antwortet nicht mit 200"
-            docker logs app
-            exit
+          if curl -f --max-time 10 http://localhost:8080/login; then
+            echo "✅ App is reachable"
+          else
+            echo "❌ App not reachable – showing logs:"
+            docker compose logs
+            exit 1
+          fi
