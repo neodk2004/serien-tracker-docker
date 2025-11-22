@@ -26,6 +26,7 @@ WORKDIR /root/
 COPY --from=builder /app/serien-tracker .
 COPY --from=builder /app/templates ./templates/
 COPY --from=builder /app/static ./static/
+COPY --from=builder /app/data ./data/  # falls vorhanden
 
 # Datenverzeichnis vorbereiten (für Nutzerdaten)
 RUN mkdir -p data
