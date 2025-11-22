@@ -10,7 +10,7 @@ services:
       - OMDb_API_KEY=DEIN_ECHTER_KEY_HIER
     restart: unless-stopped
     container_name: series-tracker
-    image: series-tracker:latest
+    image: series-tracker-docker:latest
 
 
 

@@ -85,7 +85,7 @@ type PageData struct {
 
 // TRAG DEINEN API-KEY HIER EIN
 const (
-	apiKey   = "dein_api_key_hier" //<<<------------------ DEIN API KEY HIER REIN
+	var apiKey = os.Getenv("OMDb_API_KEY") // ← ÄNDERUNG HIER
 	dataFile = "series.json"
 	dbPath   = "series.db"
 )
