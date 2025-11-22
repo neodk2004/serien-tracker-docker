@@ -37,8 +37,8 @@ Du brauchst kein Go installiert – alles läuft in Docker!
 
 1. Repository klonen
 
-git clone https://github.com/neodk2004/serien-tracker.git
-cd serien-tracker
+  git clone https://github.com/neodk2004/serien-tracker.git
+  cd serien-tracker
 
 🔽 Warum klonen?
 Deine Anwendung wird direkt aus dem Quellcode gebaut – daher benötigt Docker Zugriff auf Dockerfile, main.go, templates/ etc. 
@@ -49,14 +49,14 @@ Erstelle eine Datei .env im Projektordner:
 cp .env.example .env
 Öffne .env und trage deinen echten OMDb-API-Key ein:
 
-env
-OMDb_API_KEY=dein_echter_api_key_hier
+  env
+  OMDb_API_KEY=dein_echter_api_key_hier
 
 📌 Du brauchst einen kostenlosen Key von https://www.omdbapi.com/apikey.aspx 
 
 3. Mit einem Befehl starten
 
-docker-compose up --build
+  docker-compose up --build
 Docker baut automatisch das Image
 Startet den Container
 Macht die App auf http://localhost:8080 verfügbar
@@ -72,7 +72,7 @@ Füge deine ersten Serien hinzu!
 🔁 Ohne erneutes Bauen starten (bei wiederholtem Start)
 Nach dem ersten --build genügt:
 
-docker-compose up
+  docker-compose up
 
 Deine Daten bleiben erhalten – sie werden im lokalen Ordner ./data/ gespeichert.
 
