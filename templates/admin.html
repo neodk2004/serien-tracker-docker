@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin-Panel – Serien Tracker</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            color: white;
+        }
+        .admin-card {
+            background: #181818;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .admin-card h2 {
+            margin-top: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 400;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: white;
+            font-family: 'Netflix Sans', sans-serif;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .netflix-btn {
+            padding: 10px 20px;
+            font-family: 'Netflix Sans', sans-serif;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .netflix-btn.primary {
+            background: #e50914;
+            color: white;
+        }
+        .netflix-btn.danger {
+            background: #b00;
+            color: white;
+        }
+        .netflix-btn.secondary {
+            background: #333;
+            color: white;
+        }
+        .delete-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <header class="netflix-header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">🎬</span>
+                <span class="logo-text">SERIEN TRACKER</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item">Startseite</a>
+                <a href="/mylist" class="nav-item">Meine Liste</a>
+                <a href="/admin" class="nav-item active">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div class="admin-card">
+            <h2>👥 Nutzernamen verwalten</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="user_b">Nutzer B</label>
+                    <input type="text" id="user_b" name="user_b_name" value="{{.Users.user_b.DisplayName}}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="user_c">Nutzer C</label>
+                    <input type="text" id="user_c" name="user_c_name" value="{{.Users.user_c.DisplayName}}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="user_d">Nutzer D</label>
+                    <input type="text" id="user_d" name="user_d_name" value="{{.Users.user_d.DisplayName}}" class="form-control">
+                </div>
+
+                <button type="submit" class="netflix-btn primary">✅ Änderungen speichern</button>
+            </form>
+        </div>
+
+        <div class="admin-card delete-section">
+            <h2>🗑️ Nutzerdaten löschen</h2>
+            <p>Wähle einen Nutzer, dessen Serienliste vollständig gelöscht werden soll.</p>
+            <form method="POST" onsubmit="return confirm('Bist du sicher? Diese Aktion kann nicht rückgängig gemacht werden!');">
+                <div class="form-group">
+                    <label for="delete_user">Nutzer zum Löschen auswählen:</label>
+                    <select name="delete_user" class="form-control" required>
+                        <option value="">– Wähle –</option>
+                        <option value="user_b">Nutzer B ({{.Users.user_b.DisplayName}})</option>
+                        <option value="user_c">Nutzer C ({{.Users.user_c.DisplayName}})</option>
+                        <option value="user_d">Nutzer D ({{.Users.user_d.DisplayName}})</option>
+                    </select>
+                </div>
+                <button type="submit" class="netflix-btn danger">🗑️ Nutzerdaten löschen</button>
+            </form>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" class="netflix-btn secondary">← Zurück zur Startseite</a>
+        </div>
+    </div>
+</body>
+</html>

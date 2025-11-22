@@ -1,0 +1,10 @@
+version: '3'
+services:
+  series-tracker:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/root/data
+    environment:
+      - OMDb_API_KEY=DEIN_ECHTER_KEY_HIER

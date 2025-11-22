@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – Serien Tracker</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #000, #111);
+            color: white;
+            padding: 20px;
+        }
+        .login-box {
+            background: #181818;
+            border-radius: 8px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .login-box h2 {
+            margin-bottom: 24px;
+            font-weight: 700;
+            font-size: 24px;
+        }
+        .user-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #e50914;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Netflix Sans', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .user-btn:hover {
+            background: #f40612;
+        }
+        .user-btn.secondary {
+            background: #333;
+        }
+        .user-btn.secondary:hover {
+            background: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>🎬 Serien Tracker</h2>
+            <p>Wähle deinen Benutzer aus:</p>
+
+            <form method="POST" style="margin-top: 20px;">
+                <input type="hidden" name="user" value="user_a">
+                <button type="submit" class="user-btn">Nutzer A (Admin)</button>
+            </form>
+            <form method="POST">
+                <input type="hidden" name="user" value="user_b">
+                <button type="submit" class="user-btn secondary">Nutzer B</button>
+            </form>
+            <form method="POST">
+                <input type="hidden" name="user" value="user_c">
+                <button type="submit" class="user-btn secondary">Nutzer C</button>
+            </form>
+            <form method="POST">
+                <input type="hidden" name="user" value="user_d">
+                <button type="submit" class="user-btn secondary">Nutzer D</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
