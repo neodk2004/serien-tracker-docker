@@ -3,6 +3,15 @@
 Ein einfacher und effizienter Serientracker, geschrieben in Go, der die OMDb API nutzt, um Serieninformationen abzurufen und persönliche Serienlisten zu verwalten.
 <img width="1771" height="761" alt="Screenshot 2025-11-22 124254" src="https://github.com/user-attachments/assets/c1de464b-49ac-4e0f-abe4-801a56373de1" />
 
+💡 Features 
+
+🔐 Login für 4 Nutzer (A, B, C, D)
+📁 Getrennte Serienlisten pro Nutzer
+👮 Admin-Panel (nur für Nutzer A)
+🌐 IMDb-Integration (Suche & Cover)
+📄 PDF-Export deiner Liste
+🐳 Vollständig in Docker containerisiert
+
 # Funktionen
 Serien hinzufügen über Titel oder IMDb-ID
 <img width="747" height="185" alt="Screenshot 2025-11-22 124606" src="https://github.com/user-attachments/assets/d8042626-d9bd-4900-92a8-7a9c184d5bee" />
@@ -18,72 +27,66 @@ PDF-Export der Serienliste zum Teilen mit Freunden
 
 Lokale Datenspeicherung im JSON-Format
 
-# Voraussetzungen
-Go 1.16 oder höher
+# 🛠️ Voraussetzungen
+Docker (v20.10 oder höher)
+Docker Compose (in neueren Docker-Versionen bereits enthalten)
+Ein kostenloser OMDb API-Key
 
-OMDb API-Schlüssel (kostenlos registrierbar unter https://www.omdbapi.com/apikey.aspx)
+# 🚀 Schnellstart (Lokal)
+Du brauchst kein Go installiert – alles läuft in Docker!
 
+1. Repository klonen
 
-Installation
-Repository klonen:
-`git clone https://github.com/neodk2004/serien-tracker.git`
-`cd serien-tracker`
+git clone https://github.com/neodk2004/serien-tracker.git
+cd serien-tracker
 
-Abhängigkeiten installieren:
+🔽 Warum klonen?
+Deine Anwendung wird direkt aus dem Quellcode gebaut – daher benötigt Docker Zugriff auf Dockerfile, main.go, templates/ etc. 
 
-`go mod download`
+2. API-Key hinzufügen
+Erstelle eine Datei .env im Projektordner:
 
-OMDb API-Schlüssel konfigurieren:
+cp .env.example .env
+Öffne .env und trage deinen echten OMDb-API-Key ein:
 
-`export OMDB_API_KEY="dein_api_schluessel"`
+env
+OMDb_API_KEY=dein_echter_api_key_hier
 
-Verwendung
+📌 Du brauchst einen kostenlosen Key von https://www.omdbapi.com/apikey.aspx 
 
-Serien hinzufügen
+3. Mit einem Befehl starten
 
-`go run main.go add --titel "Breaking Bad"`
+docker-compose up --build
+Docker baut automatisch das Image
+Startet den Container
+Macht die App auf http://localhost:8080 verfügbar
 
-oder mit IMDb-ID
+💡 Kein manuelles docker build nötig – docker-compose erledigt alles! 
 
-`go run main.go add --id "tt0903747"`
+4. Loslegen!
 
-Folgenstatus aktualisieren
+Öffne http://localhost:8080
+Wähle einen Nutzer (z. B. Nutzer A für Admin-Zugriff)
+Füge deine ersten Serien hinzu!
 
-`go run main.go update --id "tt0903747" --episoden 5`
-Serienliste anzeigen
+🔁 Ohne erneutes Bauen starten (bei wiederholtem Start)
+Nach dem ersten --build genügt:
 
-`go run main.go list`
+docker-compose up
 
-PDF exportieren
+Deine Daten bleiben erhalten – sie werden im lokalen Ordner ./data/ gespeichert.
 
-`go run main.go export --output meine_serien.pdf`
+🗑️ Aufräumen (optional)
+Stoppe und entferne Container:
 
-# Projektstruktur
+docker-compose down
 
-	serientracker/
-	├── main.go          # Hauptprogramm
-	├── fonts/           # Fonts und Schriftarten
-	├── static/          # Style-Sheet
-	    └── css/
-	        └── style.css
-	├── templates/         # HTML - Pfad
-	    └── index.html
-	    └── mylist.html
-	└── README.md
+Willst du alle Nutzerdaten löschen?
 
-# Konfiguration
-Die Anwendung verwendet folgende Umgebungsvariablen:
+rm -rf data/
 
-OMDB_API_KEY - OMDb API Schlüssel (erforderlich)
+✅ Das ist alles! Kein Go, kein Build-Tool – nur Docker und ein API-Key.
 
-Den Key musst du in der Zeile 71 in der main.go eingeben. 
-Falls das nicht passiert, erhälst du eine Fehlermeldung: "WARNUNG: Bitte trage deinen echten OMDb API-Key in die main.go ein"
-
-
-
-# Beiträge sind willkommen! Bitte erstellt ein Issue oder Pull Request für Verbesserungen.
-
-# Hinweis: Dieser Serientracker ist ein persönliches Projekt und nicht mit IMDb oder OMDb affiliiert.
 
 
 

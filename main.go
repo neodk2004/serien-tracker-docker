@@ -67,19 +67,19 @@ type User struct {
 }
 
 type PageData struct {
-	SeriesList     []Series
-	SearchResults  []SearchItem
-	SearchQuery    string
-	ErrorMessage   string
-	SuccessMessage string
-	APIAvailable   bool
-	TotalSeries    int
-	TotalWatched   int
-	SortBy         string
-	Order          string
-	CurrentUser    string
-	Users          map[string]User
-	IsAdmin        bool
+	SeriesList      []Series
+	SearchResults   []SearchItem
+	SearchQuery     string
+	ErrorMessage    string
+	SuccessMessage  string
+	APIAvailable    bool
+	TotalSeries     int
+	TotalWatched    int
+	SortBy          string
+	Order           string
+	CurrentUser     string
+	CurrentUserName string // ← Wird im Template als "Angemeldet als: ..." angezeigt
+	IsAdmin         bool
 }
 
 // --- GLOBALE VARIABLEN ---
@@ -213,8 +213,19 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 func requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := getCurrentUser(r)
-		if !ok || !users[user].IsAdmin {
-			http.Error(w, "forbidden", http.StatusForbidden)
+		if !ok {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+		if !users[user].IsAdmin {
+			data := PageData{
+				ErrorMessage:    "Zugriff verweigert: Nur für Administratoren",
+				CurrentUser:     user,
+				CurrentUserName: users[user].DisplayName,
+				IsAdmin:         false,
+			}
+			w.WriteHeader(http.StatusForbidden)
+			templates.ExecuteTemplate(w, "index.html", data)
 			return
 		}
 		next(w, r)
@@ -278,9 +289,9 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := PageData{
-		CurrentUser: user,
-		Users:       users,
-		IsAdmin:     true,
+		CurrentUser:     user,
+		CurrentUserName: users[user].DisplayName,
+		IsAdmin:         true,
 	}
 	templates.ExecuteTemplate(w, "admin.html", data)
 }
@@ -297,13 +308,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	apiAvailable := testAPIConnection()
 
 	data := PageData{
-		SeriesList:   series,
-		APIAvailable: apiAvailable,
-		TotalSeries:  totalSeries,
-		TotalWatched: totalWatched,
-		CurrentUser:  user,
-		Users:        users,
-		IsAdmin:      users[user].IsAdmin,
+		SeriesList:      series,
+		APIAvailable:    apiAvailable,
+		TotalSeries:     totalSeries,
+		TotalWatched:    totalWatched,
+		CurrentUser:     user,
+		CurrentUserName: users[user].DisplayName,
+		IsAdmin:         users[user].IsAdmin,
 	}
 	templates.ExecuteTemplate(w, "index.html", data)
 }
@@ -339,15 +350,15 @@ func myListHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := PageData{
-		SeriesList:   series,
-		APIAvailable: testAPIConnection(),
-		TotalSeries:  totalSeries,
-		TotalWatched: totalEpisodesWatched,
-		SortBy:       sortBy,
-		Order:        order,
-		CurrentUser:  user,
-		Users:        users,
-		IsAdmin:      users[user].IsAdmin,
+		SeriesList:      series,
+		APIAvailable:    testAPIConnection(),
+		TotalSeries:     totalSeries,
+		TotalWatched:    totalEpisodesWatched,
+		SortBy:          sortBy,
+		Order:           order,
+		CurrentUser:     user,
+		CurrentUserName: users[user].DisplayName,
+		IsAdmin:         users[user].IsAdmin,
 	}
 	templates.ExecuteTemplate(w, "mylist.html", data)
 }
@@ -375,14 +386,14 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 		seriesList := loadSeriesForUser(user)
 		totalSeries, totalWatched := calculateStats(seriesList)
 		data := PageData{
-			SeriesList:   seriesList,
-			ErrorMessage: fmt.Sprintf("failed to add series: %v", err),
-			APIAvailable: testAPIConnection(),
-			TotalSeries:  totalSeries,
-			TotalWatched: totalWatched,
-			CurrentUser:  user,
-			Users:        users,
-			IsAdmin:      users[user].IsAdmin,
+			SeriesList:      seriesList,
+			ErrorMessage:    fmt.Sprintf("failed to add series: %v", err),
+			APIAvailable:    testAPIConnection(),
+			TotalSeries:     totalSeries,
+			TotalWatched:    totalWatched,
+			CurrentUser:     user,
+			CurrentUserName: users[user].DisplayName,
+			IsAdmin:         users[user].IsAdmin,
 		}
 		templates.ExecuteTemplate(w, "index.html", data)
 		return
@@ -401,14 +412,14 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 			seriesList := loadSeriesForUser(user)
 			totalSeries, totalWatched := calculateStats(seriesList)
 			data := PageData{
-				SeriesList:   seriesList,
-				ErrorMessage: "series already in your library",
-				APIAvailable: testAPIConnection(),
-				TotalSeries:  totalSeries,
-				TotalWatched: totalWatched,
-				CurrentUser:  user,
-				Users:        users,
-				IsAdmin:      users[user].IsAdmin,
+				SeriesList:      seriesList,
+				ErrorMessage:    "series already in your library",
+				APIAvailable:    testAPIConnection(),
+				TotalSeries:     totalSeries,
+				TotalWatched:    totalWatched,
+				CurrentUser:     user,
+				CurrentUserName: users[user].DisplayName,
+				IsAdmin:         users[user].IsAdmin,
 			}
 			templates.ExecuteTemplate(w, "index.html", data)
 			return
@@ -438,14 +449,14 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 	seriesList := loadSeriesForUser(user)
 	totalSeries, totalWatched := calculateStats(seriesList)
 	data := PageData{
-		SeriesList:     seriesList,
-		SuccessMessage: fmt.Sprintf("✅ '%s' added successfully!", seriesData.Title),
-		APIAvailable:   testAPIConnection(),
-		TotalSeries:    totalSeries,
-		TotalWatched:   totalWatched,
-		CurrentUser:    user,
-		Users:          users,
-		IsAdmin:        users[user].IsAdmin,
+		SeriesList:      seriesList,
+		SuccessMessage:  fmt.Sprintf("✅ '%s' added successfully!", seriesData.Title),
+		APIAvailable:    testAPIConnection(),
+		TotalSeries:     totalSeries,
+		TotalWatched:    totalWatched,
+		CurrentUser:     user,
+		CurrentUserName: users[user].DisplayName,
+		IsAdmin:         users[user].IsAdmin,
 	}
 	templates.ExecuteTemplate(w, "index.html", data)
 }
@@ -545,15 +556,15 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		seriesList := loadSeriesForUser(user)
 		totalSeries, totalWatched := calculateStats(seriesList)
 		data := PageData{
-			SeriesList:   seriesList,
-			SearchQuery:  query,
-			ErrorMessage: fmt.Sprintf("search failed: %v", err),
-			APIAvailable: testAPIConnection(),
-			TotalSeries:  totalSeries,
-			TotalWatched: totalWatched,
-			CurrentUser:  user,
-			Users:        users,
-			IsAdmin:      users[user].IsAdmin,
+			SeriesList:      seriesList,
+			SearchQuery:     query,
+			ErrorMessage:    fmt.Sprintf("search failed: %v", err),
+			APIAvailable:    testAPIConnection(),
+			TotalSeries:     totalSeries,
+			TotalWatched:    totalWatched,
+			CurrentUser:     user,
+			CurrentUserName: users[user].DisplayName,
+			IsAdmin:         users[user].IsAdmin,
 		}
 		templates.ExecuteTemplate(w, "index.html", data)
 		return
@@ -569,15 +580,15 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	seriesList := loadSeriesForUser(user)
 	totalSeries, totalWatched := calculateStats(seriesList)
 	data := PageData{
-		SeriesList:    seriesList,
-		SearchResults: seriesResults,
-		SearchQuery:   query,
-		APIAvailable:  testAPIConnection(),
-		TotalSeries:   totalSeries,
-		TotalWatched:  totalWatched,
-		CurrentUser:   user,
-		Users:         users,
-		IsAdmin:       users[user].IsAdmin,
+		SeriesList:      seriesList,
+		SearchResults:   seriesResults,
+		SearchQuery:     query,
+		APIAvailable:    testAPIConnection(),
+		TotalSeries:     totalSeries,
+		TotalWatched:    totalWatched,
+		CurrentUser:     user,
+		CurrentUserName: users[user].DisplayName,
+		IsAdmin:         users[user].IsAdmin,
 	}
 
 	if len(seriesResults) == 0 && len(results.Search) > 0 {
@@ -866,7 +877,7 @@ func main() {
 
 	templates = template.Must(template.ParseGlob("templates/*.html"))
 
-	// Routen – ACHTUNG: /login OHNE Middleware!
+	// WICHTIG: /login ohne Auth-Middleware!
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/admin", requireAdmin(adminHandler))
 	http.HandleFunc("/", authMiddleware(indexHandler))
