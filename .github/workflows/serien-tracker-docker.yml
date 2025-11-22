@@ -19,7 +19,7 @@ jobs:
 
       - name: Start container in background
         run: |
-          docker run -d --name app -p 8080:8080 serien-tracker
+          docker run -d --name app -p 8080:8080 serien-tracker -e 55570c3a
           # Warte kurz, damit der Server starten kann
           sleep 5
 
