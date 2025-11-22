@@ -1,0 +1,62 @@
+/* Netflix: Dunkel mit rotem Akzent */
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #141414;
+  --bg-card: #181818;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --accent-primary: #e50914;
+  --accent-hover: #f40612;
+  --border-color: #333;
+  --success: #46d369;
+  --error: #e50914;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Netflix Sans', sans-serif;
+}
+
+.netflix-header {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+  padding: 16px 0;
+}
+
+.logo-text {
+  color: var(--text-primary);
+}
+
+.nav-item {
+  color: var(--text-secondary);
+}
+.nav-item:hover, .nav-item.active {
+  color: var(--text-primary);
+}
+
+.netflix-btn.primary {
+  background-color: var(--accent-primary);
+  color: white;
+}
+.netflix-btn.primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.netflix-btn.secondary {
+  background-color: #333;
+  color: white;
+}
+.netflix-btn.secondary:hover {
+  background-color: #444;
+}
+
+.series-card, .result-card, .admin-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.status-badge.Watching { background: var(--accent-primary); }
+.status-badge.Completed { background: var(--success); }
+
+.netflix-alert.error { background: rgba(229, 9, 20, 0.2); border-left: 4px solid var(--error); }
+.netflix-alert.success { background: rgba(70, 211, 105, 0.2); border-left: 4px solid var(--success); }

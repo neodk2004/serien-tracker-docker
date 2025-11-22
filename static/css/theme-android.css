@@ -1,0 +1,79 @@
+/* Android Material Design: Hell, mit grünem Akzent */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card: #ffffff;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --accent-primary: #34a853;
+  --accent-hover: #3ca962;
+  --border-color: #dadce0;
+  --success: #34a853;
+  --error: #ea4335;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+}
+
+.netflix-header {
+  background-color: var(--bg-primary);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 12px 0;
+}
+
+.logo-text {
+  color: var(--text-primary);
+}
+
+.nav-item {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.nav-item:hover, .nav-item.active {
+  color: var(--accent-primary);
+}
+
+.netflix-btn.primary {
+  background-color: var(--accent-primary);
+  color: white;
+  border-radius: 4px;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 500;
+}
+.netflix-btn.primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.netflix-btn.secondary {
+  background: transparent;
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+.netflix-btn.secondary:hover {
+  background: rgba(52, 168, 83, 0.08);
+}
+
+.series-card, .result-card, .admin-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.status-badge.Watching { background: var(--accent-primary); color: white; border-radius: 4px; }
+.status-badge.Completed { background: var(--success); color: white; border-radius: 4px; }
+
+.netflix-alert {
+  border-radius: 8px;
+  padding: 12px;
+}
+.netflix-alert.error { background: rgba(234, 67, 53, 0.1); border-left: 4px solid var(--error); }
+.netflix-alert.success { background: rgba(52, 168, 83, 0.1); border-left: 4px solid var(--success); }

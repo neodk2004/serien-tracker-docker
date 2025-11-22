@@ -1,0 +1,74 @@
+/* Apple: Hellgrau, sanftes Blau, minimalistisch */
+:root {
+  --bg-primary: #f5f5f7;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --accent-primary: #0071e3;
+  --accent-hover: #0077ed;
+  --border-color: #d2d2d7;
+  --success: #30d158;
+  --error: #ff3b30;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.netflix-header {
+  background-color: var(--bg-secondary);
+  box-shadow: 0 1px 0 var(--border-color);
+  padding: 12px 0;
+}
+
+.logo-text {
+  color: var(--text-primary);
+}
+
+.nav-item {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.nav-item:hover, .nav-item.active {
+  color: var(--accent-primary);
+}
+
+.netflix-btn.primary {
+  background-color: var(--accent-primary);
+  color: white;
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+.netflix-btn.primary:hover {
+  background-color: var(--accent-hover);
+}
+
+.netflix-btn.secondary {
+  background: transparent;
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  border-radius: 10px;
+}
+.netflix-btn.secondary:hover {
+  background: rgba(0, 113, 227, 0.08);
+}
+
+.series-card, .result-card, .admin-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.status-badge.Watching { background: var(--accent-primary); color: white; }
+.status-badge.Completed { background: var(--success); color: white; }
+
+.netflix-alert {
+  border-radius: 10px;
+  padding: 12px;
+}
+.netflix-alert.error { background: rgba(255, 59, 48, 0.1); border-left: 4px solid var(--error); }
+.netflix-alert.success { background: rgba(48, 209, 88, 0.1); border-left: 4px solid var(--success); }

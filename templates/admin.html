@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin-Panel – Serien Tracker</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/theme-{{.UserTheme}}.css">
     <link href="https://fonts.googleapis.com/css2?family=Netflix+Sans:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         .admin-container {
@@ -107,7 +107,37 @@
                 <button type="submit" class="netflix-btn primary">✅ Änderungen speichern</button>
             </form>
         </div>
+<h3>🎨 Theme-Einstellungen</h3>
 
+<div class="form-group">
+  <label for="user_b_theme">Theme für {{.Users.user_b.DisplayName}}</label>
+  <select name="user_b_theme" class="form-control">
+    <option value="netflix" {{if eq .Users.user_b.Theme "netflix"}}selected{{end}}>Netflix (Schwarz/Rot)</option>
+    <option value="apple" {{if eq .Users.user_b.Theme "apple"}}selected{{end}}>Apple (Hellgrau/Blau)</option>
+    <option value="android" {{if eq .Users.user_b.Theme "android"}}selected{{end}}>Android (Grün/Weiß)</option>
+    <option value="windows" {{if eq .Users.user_b.Theme "windows"}}selected{{end}}>Windows 3.11 (Grau/Blau)</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label for="user_c_theme">Theme für {{.Users.user_c.DisplayName}}</label>
+  <select name="user_c_theme" class="form-control">
+    <option value="netflix" {{if eq .Users.user_c.Theme "netflix"}}selected{{end}}>Netflix (Schwarz/Rot)</option>
+    <option value="apple" {{if eq .Users.user_c.Theme "apple"}}selected{{end}}>Apple (Hellgrau/Blau)</option>
+    <option value="android" {{if eq .Users.user_c.Theme "android"}}selected{{end}}>Android (Grün/Weiß)</option>
+    <option value="windows" {{if eq .Users.user_c.Theme "windows"}}selected{{end}}>Windows 3.11 (Grau/Blau)</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label for="user_d_theme">Theme für {{.Users.user_d.DisplayName}}</label>
+  <select name="user_d_theme" class="form-control">
+    <option value="netflix" {{if eq .Users.user_d.Theme "netflix"}}selected{{end}}>Netflix (Schwarz/Rot)</option>
+    <option value="apple" {{if eq .Users.user_d.Theme "apple"}}selected{{end}}>Apple (Hellgrau/Blau)</option>
+    <option value="android" {{if eq .Users.user_d.Theme "android"}}selected{{end}}>Android (Grün/Weiß)</option>
+    <option value="windows" {{if eq .Users.user_d.Theme "windows"}}selected{{end}}>Windows 3.11 (Grau/Blau)</option>
+  </select>
+</div>
         <div class="admin-card delete-section">
             <h2>🗑️ Nutzerdaten löschen</h2>
             <p>Wähle einen Nutzer, dessen Serienliste vollständig gelöscht werden soll.</p>

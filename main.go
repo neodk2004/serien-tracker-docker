@@ -61,7 +61,7 @@ type SearchItem struct {
 
 type User struct {
 	DisplayName string `json:"display_name"`
-	Theme       string `json:"theme"`
+	Theme       string `json:"theme"` // z. B. "netflix", "apple", "android", "windows"
 	Lang        string `json:"lang"`
 	IsAdmin     bool   `json:"is_admin"`
 }
@@ -78,7 +78,8 @@ type PageData struct {
 	SortBy          string
 	Order           string
 	CurrentUser     string
-	CurrentUserName string // ← Wird im Template als "Angemeldet als: ..." angezeigt
+	CurrentUserName string
+	UserTheme       string // ← Wird für dynamisches Theme-Laden genutzt
 	IsAdmin         bool
 }
 
@@ -91,10 +92,10 @@ var (
 	mutex     sync.Mutex
 
 	users = map[string]User{
-		"user_a": {DisplayName: "Nutzer A", Theme: "dark", Lang: "de", IsAdmin: true},
-		"user_b": {DisplayName: "Nutzer B", Theme: "light", Lang: "de", IsAdmin: false},
-		"user_c": {DisplayName: "Nutzer C", Theme: "light", Lang: "de", IsAdmin: false},
-		"user_d": {DisplayName: "Nutzer D", Theme: "light", Lang: "de", IsAdmin: false},
+		"user_a": {DisplayName: "Nutzer A", Theme: "netflix", Lang: "de", IsAdmin: true},
+		"user_b": {DisplayName: "Nutzer B", Theme: "netflix", Lang: "de", IsAdmin: false},
+		"user_c": {DisplayName: "Nutzer C", Theme: "netflix", Lang: "de", IsAdmin: false},
+		"user_d": {DisplayName: "Nutzer D", Theme: "netflix", Lang: "de", IsAdmin: false},
 	}
 
 	httpClient = &http.Client{
@@ -218,10 +219,17 @@ func requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 		if !users[user].IsAdmin {
+			// Stelle sicher, dass Theme gültig ist
+			theme := users[user].Theme
+			validThemes := map[string]bool{"netflix": true, "apple": true, "android": true, "windows": true}
+			if !validThemes[theme] {
+				theme = "netflix"
+			}
 			data := PageData{
 				ErrorMessage:    "Zugriff verweigert: Nur für Administratoren",
 				CurrentUser:     user,
 				CurrentUserName: users[user].DisplayName,
+				UserTheme:       theme,
 				IsAdmin:         false,
 			}
 			w.WriteHeader(http.StatusForbidden)
@@ -255,12 +263,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	templates.ExecuteTemplate(w, "login.html", nil)
+	// Für Login-Seite: Standard-Theme (z. B. netflix)
+	templates.ExecuteTemplate(w, "login.html", map[string]string{"UserTheme": "netflix"})
 }
 
 func adminHandler(w http.ResponseWriter, r *http.Request) {
 	user, _ := getCurrentUser(r)
 	if r.Method == "POST" {
+		// Namen aktualisieren
 		if name := r.FormValue("user_b_name"); name != "" {
 			u := users["user_b"]
 			u.DisplayName = name
@@ -276,22 +286,51 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 			u.DisplayName = name
 			users["user_d"] = u
 		}
+
+		// Themes aktualisieren
+		if theme := r.FormValue("user_b_theme"); theme != "" {
+			u := users["user_b"]
+			u.Theme = theme
+			users["user_b"] = u
+		}
+		if theme := r.FormValue("user_c_theme"); theme != "" {
+			u := users["user_c"]
+			u.Theme = theme
+			users["user_c"] = u
+		}
+		if theme := r.FormValue("user_d_theme"); theme != "" {
+			u := users["user_d"]
+			u.Theme = theme
+			users["user_d"] = u
+		}
+
 		saveUsers()
 
+		// Nutzerdaten löschen
 		delUser := r.FormValue("delete_user")
 		if delUser != "" && delUser != "user_a" {
 			if _, exists := users[delUser]; exists {
 				os.Remove(getDataFileForUser(delUser))
 			}
 		}
+
 		http.Redirect(w, r, "/admin", http.StatusSeeOther)
 		return
+	}
+
+	// Theme für Admin-Seite
+	theme := users[user].Theme
+	validThemes := map[string]bool{"netflix": true, "apple": true, "android": true, "windows": true}
+	if !validThemes[theme] {
+		theme = "netflix"
 	}
 
 	data := PageData{
 		CurrentUser:     user,
 		CurrentUserName: users[user].DisplayName,
+		UserTheme:       theme,
 		IsAdmin:         true,
+		Users:           users,
 	}
 	templates.ExecuteTemplate(w, "admin.html", data)
 }
@@ -301,6 +340,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
+	}
+
+	// Theme laden und validieren
+	theme := users[user].Theme
+	validThemes := map[string]bool{"netflix": true, "apple": true, "android": true, "windows": true}
+	if !validThemes[theme] {
+		theme = "netflix"
 	}
 
 	series := loadSeriesForUser(user)
@@ -314,6 +360,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		TotalWatched:    totalWatched,
 		CurrentUser:     user,
 		CurrentUserName: users[user].DisplayName,
+		UserTheme:       theme,
 		IsAdmin:         users[user].IsAdmin,
 	}
 	templates.ExecuteTemplate(w, "index.html", data)
@@ -324,6 +371,13 @@ func myListHandler(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
+	}
+
+	// Theme laden und validieren
+	theme := users[user].Theme
+	validThemes := map[string]bool{"netflix": true, "apple": true, "android": true, "windows": true}
+	if !validThemes[theme] {
+		theme = "netflix"
 	}
 
 	series := loadSeriesForUser(user)
@@ -358,16 +412,25 @@ func myListHandler(w http.ResponseWriter, r *http.Request) {
 		Order:           order,
 		CurrentUser:     user,
 		CurrentUserName: users[user].DisplayName,
+		UserTheme:       theme,
 		IsAdmin:         users[user].IsAdmin,
 	}
 	templates.ExecuteTemplate(w, "mylist.html", data)
 }
+
+// --- Restliche Handler (add, update, delete, search, pdf, api) ---
+// → Identisch wie zuvor, aber mit `UserTheme` im PageData
 
 func addHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := getCurrentUser(r)
 	if !ok {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
+	}
+	theme := users[user].Theme
+	validThemes := map[string]bool{"netflix": true, "apple": true, "android": true, "windows": true}
+	if !validThemes[theme] {
+		theme = "netflix"
 	}
 
 	if r.Method != "POST" {
@@ -393,6 +456,7 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 			TotalWatched:    totalWatched,
 			CurrentUser:     user,
 			CurrentUserName: users[user].DisplayName,
+			UserTheme:       theme,
 			IsAdmin:         users[user].IsAdmin,
 		}
 		templates.ExecuteTemplate(w, "index.html", data)
@@ -419,6 +483,7 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 				TotalWatched:    totalWatched,
 				CurrentUser:     user,
 				CurrentUserName: users[user].DisplayName,
+				UserTheme:       theme,
 				IsAdmin:         users[user].IsAdmin,
 			}
 			templates.ExecuteTemplate(w, "index.html", data)
@@ -456,6 +521,7 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 		TotalWatched:    totalWatched,
 		CurrentUser:     user,
 		CurrentUserName: users[user].DisplayName,
+		UserTheme:       theme,
 		IsAdmin:         users[user].IsAdmin,
 	}
 	templates.ExecuteTemplate(w, "index.html", data)
@@ -467,6 +533,8 @@ func updateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
+	seriesDB := loadSeriesForUser(user)
+	found := false
 
 	if r.Method != "POST" {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -488,8 +556,6 @@ func updateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	seriesDB := loadSeriesForUser(user)
-	found := false
 	for i := range seriesDB {
 		if seriesDB[i].ID == id {
 			seriesDB[i].EpisodesWatched = episodes
@@ -539,6 +605,11 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
+	theme := users[user].Theme
+	validThemes := map[string]bool{"netflix": true, "apple": true, "android": true, "windows": true}
+	if !validThemes[theme] {
+		theme = "netflix"
+	}
 
 	if r.Method != "GET" {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -564,6 +635,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 			TotalWatched:    totalWatched,
 			CurrentUser:     user,
 			CurrentUserName: users[user].DisplayName,
+			UserTheme:       theme,
 			IsAdmin:         users[user].IsAdmin,
 		}
 		templates.ExecuteTemplate(w, "index.html", data)
@@ -588,6 +660,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 		TotalWatched:    totalWatched,
 		CurrentUser:     user,
 		CurrentUserName: users[user].DisplayName,
+		UserTheme:       theme,
 		IsAdmin:         users[user].IsAdmin,
 	}
 
@@ -877,7 +950,6 @@ func main() {
 
 	templates = template.Must(template.ParseGlob("templates/*.html"))
 
-	// WICHTIG: /login ohne Auth-Middleware!
 	http.HandleFunc("/login", loginHandler)
 	http.HandleFunc("/admin", requireAdmin(adminHandler))
 	http.HandleFunc("/", authMiddleware(indexHandler))
