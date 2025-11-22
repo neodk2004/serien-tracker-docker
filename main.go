@@ -132,7 +132,7 @@ func main() {
 	// Automatisch freien Port finden
 	port := findAvailablePort()
 	if port == 0 {
-		port = 8080
+		port = 8081
 	}
 
 	fmt.Printf("🚀 Serien-Tracker Web-Oberfläche läuft auf http://localhost:%d\n", port)
