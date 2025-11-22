@@ -432,7 +432,12 @@ func addHandler(w http.ResponseWriter, r *http.Request) {
 	if !validThemes[theme] {
 		theme = "netflix"
 	}
-
+	if theme == "" || !validThemes[theme] {
+		theme = "netflix"
+		// Optional: Speichere den Fallback-Wert dauerhaft
+		users[user].Theme = theme
+		saveUsers() // falls du Nutzerdaten persistierst
+	}
 	if r.Method != "POST" {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -610,7 +615,12 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	if !validThemes[theme] {
 		theme = "netflix"
 	}
-
+	if theme == "" || !validThemes[theme] {
+		theme = "netflix"
+		// Optional: Speichere den Fallback-Wert dauerhaft
+		users[user].Theme = theme
+		saveUsers() // falls du Nutzerdaten persistierst
+	}
 	if r.Method != "GET" {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
